@@ -1,6 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CodePipeline, CodePipelineSource, ShellStep } from 'aws-cdk-lib/pipelines';
+import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep } from 'aws-cdk-lib/pipelines';
+import { DeployLambdasAppStage } from './app-stage';
+import { ManualApprovalAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 
 export class MyPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -15,5 +17,16 @@ export class MyPipelineStack extends cdk.Stack {
         commands: ['npm ci', 'npm run build', 'npx cdk synth'],
       }),
     });
+    // const lambdaStage = pipeline.addStage(
+
+    const wave = pipeline.addWave('wave');
+    wave.addStage(
+      new DeployLambdasAppStage(this, 'lambda-backend-stage', { env: { account: '273049437864', region: 'us-west-2' } })
+    );
+    wave.addStage(
+      new DeployLambdasAppStage(this, 'lambda-backend-stage', { env: { account: '500573939214', region: 'us-east-1' } })
+    );
+
+    wave.addPost(new ManualApprovalStep('approval'));
   }
 }
