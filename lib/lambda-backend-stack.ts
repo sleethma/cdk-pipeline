@@ -7,6 +7,7 @@ export class LambdaBackend extends cdk.Stack {
     super(scope, id, props);
 
     new Function(this, 'InitLambdaFxn', {
+      functionName: 'exampleFxnCdkPipeline',
       runtime: Runtime.NODEJS_12_X,
       handler: 'index.handler',
       code: new InlineCode('exports.handler = _ => "Hello, CDK";'),
