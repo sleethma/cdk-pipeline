@@ -11,6 +11,7 @@ export class MyPipelineStack extends cdk.Stack {
     // need to set repo PAT as "github-token" w/ plain text token value
 
     const pipeline = new CodePipeline(this, 'Pipeline', {
+      crossAccountKeys: true,
       pipelineName: 'cdkPipeline',
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub('sleethma/cdk-pipeline', 'master'),
